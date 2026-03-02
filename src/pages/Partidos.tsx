@@ -23,15 +23,15 @@ export default function PartidosPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 bg-background">
-      <div className="flex items-center gap-3 px-4 pt-14 md:pt-0 pb-4 sticky top-0 z-10 bg-background">
+    <div className="flex-1 overflow-y-auto pb-24 md:pb-0 bg-background flex flex-col">
+      <div className="flex items-center gap-3 px-4 md:px-0 pt-16 md:pt-8 pb-6 sticky top-0 z-10 bg-background">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
           <ArrowLeft size={22} />
         </Button>
-        <h1 className="text-xl font-bold text-foreground">{t('partidos.title')}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('partidos.title')}</h1>
       </div>
 
-      <div className="px-4">
+      <div className="px-4 md:px-0 flex-1">
         {isLoading ? (
           <Spinner />
         ) : displayMatches.length === 0 ? (
@@ -42,9 +42,11 @@ export default function PartidosPage() {
             </p>
           </div>
         ) : (
-          displayMatches.map((m) => (
-            <MatchCard key={m.id} match={m} onDelete={setDeleteId} />
-          ))
+          <div className="space-y-3">
+            {displayMatches.map((m) => (
+              <MatchCard key={m.id} match={m} onDelete={setDeleteId} />
+            ))}
+          </div>
         )}
       </div>
 

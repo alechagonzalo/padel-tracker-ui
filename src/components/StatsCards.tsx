@@ -17,21 +17,21 @@ export function StatsCards({ stats }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {cards.map((card) => (
         <div
           key={card.labelKey}
-          className="rounded-xl p-3.5 border"
+          className="rounded-xl p-4 border"
           style={{ backgroundColor: colors.card, borderColor: colors.border }}
         >
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
+            className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
             style={{ backgroundColor: card.color + '18' }}
           >
             <card.Icon size={18} color={card.color} />
           </div>
           <p className="text-2xl font-bold" style={{ color: colors.foreground }}>{card.value}</p>
-          <p className="text-xs mt-0.5" style={{ color: colors.mutedForeground }}>{t(card.labelKey)}</p>
+          <p className="text-xs mt-1" style={{ color: colors.mutedForeground }}>{t(card.labelKey)}</p>
         </div>
       ))}
     </div>
