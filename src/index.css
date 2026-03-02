@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Paleta Padel — fondo arena caliente */
+  --background: #F5F0E8;
+  --foreground: #3D3225;
+
+  --card: #FDF9F3;
+  --card-foreground: #3D3225;
+
+  --popover: #FDF9F3;
+  --popover-foreground: #3D3225;
+
+  /* Dorado verdoso */
+  --primary: #7A6C2F;
+  --primary-foreground: #FBF7EE;
+
+  --secondary: #EBE3D5;
+  --secondary-foreground: #4A3F2E;
+
+  --muted: #EBE3D5;
+  --muted-foreground: #8A7D6B;
+
+  /* shadcn usa "accent" para hover/ghost: lo hacemos neutro (beige) */
+  --accent: #EBE3D5;
+  --accent-foreground: #4A3F2E;
+
+  --destructive: #C4451A;
+  --destructive-foreground: #FAF5EF;
+
+  --border: #DDD5C7;
+  --input: #F0E9DB;
+  --ring: #7A6C2F;
+
+  --success: #4C8C50;
+  --warning: #B89A30;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
