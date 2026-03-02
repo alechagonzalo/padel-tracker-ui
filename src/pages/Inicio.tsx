@@ -26,22 +26,22 @@ export default function InicioPage() {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 px-4 pt-14 md:pt-0">
-      <h1 className="text-2xl font-bold text-foreground">
+    <div className="flex-1 overflow-y-auto pb-24 md:pb-0 px-4 md:px-0 pt-16 md:pt-8">
+      <h1 className="text-3xl font-bold text-foreground text-balance">
         {t('inicio.hello', { name: displayName })}
       </h1>
-      <p className="text-sm mt-0.5 mb-5 text-muted-foreground">
+      <p className="text-sm mt-2 mb-8 text-muted-foreground">
         {t('inicio.summary')}
       </p>
 
-      <div className="flex justify-center mb-5">
+      <div className="flex justify-center mb-8">
         <WinRateRing winRate={stats.winRate} />
       </div>
 
       <StatsCards stats={stats} />
 
-      <div className="flex items-center justify-between mt-6 mb-3">
-        <p className="text-base font-bold text-foreground">{t('inicio.recentMatches')}</p>
+      <div className="flex items-center justify-between mt-8 mb-4">
+        <p className="text-lg font-bold text-foreground">{t('inicio.recentMatches')}</p>
         <Button
           variant="link"
           onClick={() => navigate('/partidos')}
@@ -52,13 +52,15 @@ export default function InicioPage() {
       </div>
 
       {displayMatches.length === 0 ? (
-        <div className="flex items-center justify-center py-10">
+        <div className="flex items-center justify-center py-12">
           <p className="text-sm text-center text-muted-foreground">
             {t('inicio.noMatches')}
           </p>
         </div>
       ) : (
-        displayMatches.slice(0, 10).map((m) => <MatchCard key={m.id} match={m} />)
+        <div className="space-y-3">
+          {displayMatches.slice(0, 10).map((m) => <MatchCard key={m.id} match={m} />)}
+        </div>
       )}
     </div>
   );

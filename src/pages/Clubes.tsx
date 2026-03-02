@@ -121,11 +121,11 @@ export default function ClubesPage() {
   const isLoading = matchesLoading || clubsLoading;
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 pt-14 md:pt-0 bg-background">
-      <div className="flex items-center justify-between px-4 mb-4">
+    <div className="flex-1 overflow-y-auto pb-24 md:pb-0 pt-16 md:pt-8 px-4 md:px-0 bg-background">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('clubes.title')}</h1>
-          <p className="text-sm mt-0.5 text-muted-foreground">{t('clubes.subtitle')}</p>
+          <p className="text-sm mt-1 text-muted-foreground">{t('clubes.subtitle')}</p>
         </div>
         <Button size="icon" onClick={openAdd} className="w-10 h-10 rounded-xl">
           <Plus size={20} />
@@ -134,7 +134,7 @@ export default function ClubesPage() {
 
       {/* Resumen destacado */}
       {(mostPlayed || mostWins) && (
-        <Card className="mx-4 mb-4">
+        <Card className="mb-6">
           <CardContent className="p-3.5">
             <p className="text-sm font-bold mb-2.5 text-foreground">{t('clubes.yourClubs')}</p>
             {mostPlayed && (
@@ -226,13 +226,13 @@ export default function ClubesPage() {
       {isLoading ? (
         <Spinner />
       ) : allClubs.length === 0 ? (
-        <div className="flex items-center justify-center py-16 px-4">
+        <div className="flex items-center justify-center py-16">
           <p className="text-sm text-center text-muted-foreground">
             {t('clubes.empty')}
           </p>
         </div>
       ) : (
-        <div className="px-4 flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {allClubs.map((club) => {
             const stats = clubStats.find((s) => s.clubId === club.id);
             return (

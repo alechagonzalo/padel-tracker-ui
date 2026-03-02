@@ -118,11 +118,11 @@ export default function JugadoresPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 pt-14 md:pt-0 bg-background">
-      <div className="flex items-center justify-between px-4 mb-4">
+    <div className="flex-1 overflow-y-auto pb-24 md:pb-0 pt-16 md:pt-8 px-4 md:px-0 bg-background">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('jugadores.title')}</h1>
-          <p className="text-sm mt-0.5 text-muted-foreground">{t('jugadores.count', { count: playersList.length })}</p>
+          <p className="text-sm mt-1 text-muted-foreground">{t('jugadores.count', { count: playersList.length })}</p>
         </div>
         <Button size="icon" onClick={openAdd} className="w-10 h-10 rounded-xl">
           <Plus size={20} />
@@ -185,13 +185,13 @@ export default function JugadoresPage() {
       {isLoading ? (
         <Spinner />
       ) : playersList.length === 0 ? (
-        <div className="flex items-center justify-center py-16 px-4">
+        <div className="flex items-center justify-center py-16">
           <p className="text-sm text-center text-muted-foreground">
             {t('jugadores.empty')}
           </p>
         </div>
       ) : (
-        <div className="px-4 flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {playersList.map((p) => {
             const stats = getPartnerStats(userId, p.id, matchesList);
             return (

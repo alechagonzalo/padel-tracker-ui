@@ -30,7 +30,7 @@ export function MatchCard({ match, onDelete }: Props) {
 
   return (
     <div
-      className="rounded-xl p-4 mb-3 cursor-pointer border-l-4 active:opacity-80 transition-opacity"
+      className="rounded-xl p-5 cursor-pointer border-l-4 active:opacity-80 transition-opacity"
       style={{
         backgroundColor: colors.card,
         borderColor: match.won ? colors.success : colors.destructive,

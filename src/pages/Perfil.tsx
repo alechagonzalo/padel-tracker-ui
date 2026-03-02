@@ -49,11 +49,11 @@ export default function PerfilPage() {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 pt-14 md:pt-0 px-4 bg-background">
-      <h1 className="text-2xl font-bold mb-5 text-foreground">{t('perfil.title')}</h1>
+    <div className="flex-1 overflow-y-auto pb-24 md:pb-0 pt-16 md:pt-8 px-4 md:px-0 bg-background">
+      <h1 className="text-2xl font-bold mb-6 text-foreground">{t('perfil.title')}</h1>
 
       {/* Idioma */}
-      <Card className="mb-4">
+      <Card className="mb-5">
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-2 text-foreground">{t('common.language')}</p>
           <div className="flex gap-2">
@@ -76,7 +76,7 @@ export default function PerfilPage() {
       </Card>
 
       {/* Avatar + edición */}
-      <Card className="mb-4">
+      <Card className="mb-5">
         <CardContent className="p-5">
           <div className="flex items-center gap-4">
             <Avatar className="w-14 h-14 shrink-0">
@@ -144,7 +144,7 @@ export default function PerfilPage() {
       </Card>
 
       {/* Estadísticas */}
-      <Card className="mb-4">
+      <Card className="mb-6">
         <CardContent className="p-5">
           <p className="text-sm font-bold mb-3 text-foreground">{t('perfil.summary')}</p>
           {isLoading ? (

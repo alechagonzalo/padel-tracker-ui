@@ -23,8 +23,8 @@ export function BottomNav() {
       style={{
         backgroundColor: colors.card,
         borderTop: `1px solid ${colors.border}`,
-        paddingBottom: `calc(env(safe-area-inset-bottom) + 8px)`,
-        paddingTop: '8px',
+        paddingBottom: `calc(env(safe-area-inset-bottom) + 12px)`,
+        paddingTop: '12px',
         maxWidth: '480px',
         margin: '0 auto',
         left: '50%',
@@ -51,7 +51,7 @@ export function BottomNav() {
           <NavLink
             key={tab.to}
             to={tab.to}
-            className="flex flex-col items-center gap-0.5 px-2 py-1"
+            className="flex flex-col items-center gap-1 px-3 py-2"
           >
             {({ isActive }) => (
               <>
