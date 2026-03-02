@@ -40,10 +40,21 @@ export interface ApiMatch {
   players: ApiMatchPlayer[];
 }
 
+export type ApiCourtType = 'INDOOR' | 'OUTDOOR';
+
+export interface ApiClub {
+  id: string;
+  name: string;
+  courtType: ApiCourtType;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ApiEnums {
   playerLevels: ApiPlayerLevel[];
   matchResults: ApiMatchResult[];
   matchTypes: ApiMatchType[];
+  courtTypes?: ApiCourtType[];
 }
 
 export interface AuthLoginResponse {

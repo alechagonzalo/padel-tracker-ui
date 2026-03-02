@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { getPartnerStats, getPlayerDisplayName } from '@/lib/utils';
 import { Spinner } from '@/components/Spinner';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Plus, X, Pencil, Trash2 } from '@/components/icons';
+import { Plus, Pencil, Trash2 } from '@/components/icons';
 import { players as playersApi } from '@/lib/api';
 import { appPlayerToApiBody } from '@/lib/apiMappers';
 import { usePlayers, revalidatePlayers } from '@/hooks/usePlayers';
@@ -15,23 +15,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { Player } from '@/types';
 
-const NIVELES = ['Principiante', 'Intermedio', 'Avanzado'] as const;
-type Nivel = (typeof NIVELES)[number];
+const LEVEL_KEYS = ['principiante', 'intermedio', 'avanzado'] as const;
+type LevelKey = (typeof LEVEL_KEYS)[number];
 
-const LEVEL_DISPLAY_TO_KEY: Record<string, string> = {
-  Principiante: 'principiante',
-  Intermedio: 'intermedio',
-  Avanzado: 'avanzado',
-};
-const LEVEL_KEY_TO_DISPLAY: Record<string, Nivel> = {
-  principiante: 'Principiante',
-  intermedio: 'Intermedio',
-  avanzado: 'Avanzado',
+const LEVEL_TRANSLATION_KEYS: Record<LevelKey, string> = {
+  principiante: 'jugadores.beginner',
+  intermedio: 'jugadores.intermediate',
+  avanzado: 'jugadores.advanced',
 };
 
 export default function JugadoresPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id ?? '';
 
@@ -39,29 +48,30 @@ export default function JugadoresPage() {
   const { matchesList, isLoading: loadingMatches } = useMatches();
   const isLoading = loadingPlayers || loadingMatches;
 
-  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [level, setLevel] = useState<Nivel | ''>('');
+  const [level, setLevel] = useState<LevelKey | ''>('');
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Player | null>(null);
   const [deleteBlockMessage, setDeleteBlockMessage] = useState('');
+
+  const [playerModalOpen, setPlayerModalOpen] = useState(false);
 
   const openAdd = () => {
     setEditingId(null);
     setFirstName('');
     setLastName('');
     setLevel('');
-    setShowForm(true);
+    setPlayerModalOpen(true);
   };
 
   const openEdit = (p: Player) => {
     setEditingId(p.id);
     setFirstName(p.firstName);
     setLastName(p.lastName);
-    setLevel((p.level && LEVEL_KEY_TO_DISPLAY[p.level]) || '');
-    setShowForm(true);
+    setLevel((p.level && LEVEL_KEYS.includes(p.level as LevelKey) ? p.level : '') as LevelKey | '');
+    setPlayerModalOpen(true);
   };
 
   const handleSave = async () => {
@@ -71,7 +81,7 @@ export default function JugadoresPage() {
       const body = appPlayerToApiBody({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        level: level ? LEVEL_DISPLAY_TO_KEY[level] : undefined,
+        level: level || undefined,
       });
       if (editingId) {
         await playersApi.update(editingId, body);
@@ -79,7 +89,7 @@ export default function JugadoresPage() {
         await playersApi.create(body);
       }
       await revalidatePlayers();
-      setShowForm(false);
+      setPlayerModalOpen(false);
       setEditingId(null);
     } finally {
       setSaving(false);
@@ -90,7 +100,10 @@ export default function JugadoresPage() {
     const stats = getPartnerStats(userId, p.id, matchesList);
     if (stats.played > 0) {
       setDeleteBlockMessage(
-        `${getPlayerDisplayName(p)} tiene ${stats.played} partido${stats.played !== 1 ? 's' : ''} asociado${stats.played !== 1 ? 's' : ''}. Solo puedes eliminar jugadores sin partidos.`
+        t('jugadores.cannotDeleteMessage', {
+          name: getPlayerDisplayName(p),
+          count: stats.played,
+        })
       );
       return;
     }
@@ -105,86 +118,76 @@ export default function JugadoresPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 pt-14 bg-background">
+    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 pt-14 md:pt-0 bg-background">
       <div className="flex items-center justify-between px-4 mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Jugadores</h1>
-          <p className="text-sm mt-0.5 text-muted-foreground">{playersList.length} jugadores</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('jugadores.title')}</h1>
+          <p className="text-sm mt-0.5 text-muted-foreground">{t('jugadores.count', { count: playersList.length })}</p>
         </div>
-        <Button
-          size="icon"
-          onClick={showForm ? () => setShowForm(false) : openAdd}
-          className="w-10 h-10 rounded-xl"
-        >
-          {showForm ? <X size={20} /> : <Plus size={20} />}
+        <Button size="icon" onClick={openAdd} className="w-10 h-10 rounded-xl">
+          <Plus size={20} />
         </Button>
       </div>
 
-      {/* Formulario añadir/editar */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden"
-          >
-            <Card className="mx-4 mb-4">
-              <CardContent className="p-4 flex flex-col gap-3">
-                <div className="space-y-1.5">
-                  <Label>Nombre</Label>
-                  <Input
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Nombre del jugador"
-                    autoFocus
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Apellido</Label>
-                  <Input
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Apellido del jugador"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Nivel</Label>
-                  <div className="flex gap-2 flex-wrap">
-                    {NIVELES.map((n) => (
-                      <Button
-                        key={n}
-                        type="button"
-                        variant={level === n ? 'default' : 'outline'}
-                        size="sm"
-                        className="rounded-xl"
-                        onClick={() => setLevel(level === n ? '' : n)}
-                      >
-                        {n}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <Button
-                  onClick={handleSave}
-                  disabled={!firstName.trim() || saving}
-                  className="w-full mt-1"
-                >
-                  {saving ? 'Guardando...' : editingId ? 'Guardar' : 'Añadir jugador'}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Dialog open={playerModalOpen} onOpenChange={setPlayerModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingId ? t('jugadores.editPlayer') : t('jugadores.addPlayer')}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-2">
+            <div className="space-y-1.5">
+              <Label>{t('jugadores.name')}</Label>
+              <Input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder={t('jugadores.namePlaceholder')}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t('jugadores.lastName')}</Label>
+              <Input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder={t('jugadores.lastNamePlaceholder')}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t('jugadores.level')}</Label>
+              <Select
+                value={level || '__none__'}
+                onValueChange={(v) => setLevel(v === '__none__' ? '' : (v as LevelKey))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('jugadores.selectLevel')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">{t('jugadores.noLevel')}</SelectItem>
+                  {LEVEL_KEYS.map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {t(LEVEL_TRANSLATION_KEYS[key])}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={handleSave}
+              disabled={!firstName.trim() || saving}
+              className="w-full mt-1"
+            >
+              {saving ? t('jugadores.saving') : editingId ? t('jugadores.save') : t('jugadores.addPlayer')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {isLoading ? (
         <Spinner />
       ) : playersList.length === 0 ? (
         <div className="flex items-center justify-center py-16 px-4">
           <p className="text-sm text-center text-muted-foreground">
-            No hay jugadores. Añade uno para empezar.
+            {t('jugadores.empty')}
           </p>
         </div>
       ) : (
@@ -207,13 +210,17 @@ export default function JugadoresPage() {
                       </p>
                       {p.level && (
                         <Badge variant="secondary" className="text-xs">
-                          {LEVEL_KEY_TO_DISPLAY[p.level] ?? p.level}
+                          {LEVEL_TRANSLATION_KEYS[p.level as LevelKey] ? t(LEVEL_TRANSLATION_KEYS[p.level as LevelKey]) : p.level}
                         </Badge>
                       )}
                     </div>
                     {stats.played > 0 && (
                       <p className="text-xs mt-1 font-medium text-primary">
-                        {stats.played} partido{stats.played !== 1 ? 's' : ''} contigo · {stats.won} victoria{stats.won !== 1 ? 's' : ''} ({Math.round((stats.won / stats.played) * 100)}%)
+                        {t('jugadores.matchesWithYou_plural', {
+                          count: stats.played,
+                          won: stats.won,
+                          percent: Math.round((stats.won / stats.played) * 100),
+                        })}
                       </p>
                     )}
                   </div>
@@ -245,9 +252,9 @@ export default function JugadoresPage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="Eliminar jugador"
-        message={`¿Eliminar a ${deleteTarget ? getPlayerDisplayName(deleteTarget) : ''}?`}
-        confirmLabel="Eliminar"
+        title={t('jugadores.deleteTitle')}
+        message={t('jugadores.deleteMessage', { name: deleteTarget ? getPlayerDisplayName(deleteTarget) : '' })}
+        confirmLabel={t('jugadores.deleteConfirm')}
         destructive
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
@@ -255,9 +262,9 @@ export default function JugadoresPage() {
 
       <ConfirmDialog
         open={!!deleteBlockMessage}
-        title="No se puede eliminar"
+        title={t('jugadores.cannotDeleteTitle')}
         message={deleteBlockMessage}
-        confirmLabel="Entendido"
+        confirmLabel={t('jugadores.understood')}
         onConfirm={() => setDeleteBlockMessage('')}
         onCancel={() => setDeleteBlockMessage('')}
       />

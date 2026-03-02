@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -23,12 +24,15 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Confirmar',
-  cancelLabel = 'Cancelar',
+  confirmLabel,
+  cancelLabel,
   destructive = false,
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useTranslation();
+  const confirm = confirmLabel ?? t('common.confirm');
+  const cancel = cancelLabel ?? t('common.cancel');
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onCancel(); }}>
       <DialogContent className="max-w-sm">
@@ -38,14 +42,14 @@ export function ConfirmDialog({
         </DialogHeader>
         <DialogFooter className="flex-row gap-3 sm:flex-row">
           <Button variant="outline" className="flex-1" onClick={onCancel}>
-            {cancelLabel}
+            {cancel}
           </Button>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             className="flex-1"
             onClick={onConfirm}
           >
-            {confirmLabel}
+            {confirm}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MatchCard } from '@/components/MatchCard';
 import { Spinner } from '@/components/Spinner';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -9,6 +10,7 @@ import { useMatches, revalidateMatches } from '@/hooks/useMatches';
 import { Button } from '@/components/ui/button';
 
 export default function PartidosPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { displayMatches, isLoading } = useMatches();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -21,12 +23,12 @@ export default function PartidosPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 bg-background">
-      <div className="flex items-center gap-3 px-4 pt-14 pb-4 sticky top-0 z-10 bg-background">
+    <div className="flex-1 overflow-y-auto pb-32 md:pb-0 bg-background">
+      <div className="flex items-center gap-3 px-4 pt-14 md:pt-0 pb-4 sticky top-0 z-10 bg-background">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
           <ArrowLeft size={22} />
         </Button>
-        <h1 className="text-xl font-bold text-foreground">Todos los partidos</h1>
+        <h1 className="text-xl font-bold text-foreground">{t('partidos.title')}</h1>
       </div>
 
       <div className="px-4">
@@ -34,9 +36,9 @@ export default function PartidosPage() {
           <Spinner />
         ) : displayMatches.length === 0 ? (
           <div className="flex flex-col items-center py-16">
-            <p className="text-base font-semibold text-foreground">No hay partidos todavía.</p>
+            <p className="text-base font-semibold text-foreground">{t('partidos.empty')}</p>
             <p className="text-sm mt-2 text-muted-foreground">
-              Añade uno desde el botón central del menú.
+              {t('partidos.emptyHint')}
             </p>
           </div>
         ) : (
@@ -48,9 +50,9 @@ export default function PartidosPage() {
 
       <ConfirmDialog
         open={deleteId !== null}
-        title="Eliminar partido"
-        message="¿Seguro que quieres eliminar este partido?"
-        confirmLabel="Eliminar"
+        title={t('partidos.deleteTitle')}
+        message={t('partidos.deleteMessage')}
+        confirmLabel={t('partidos.deleteConfirm')}
         destructive
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}

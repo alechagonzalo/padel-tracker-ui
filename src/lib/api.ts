@@ -1,4 +1,5 @@
 import type {
+  ApiClub,
   ApiEnums,
   ApiMatch,
   ApiPlayer,
@@ -10,7 +11,11 @@ const TOKEN_KEY = 'padel_token';
 
 export function getBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_URL as string | undefined;
-  if (envUrl) return envUrl.replace(/\/$/, '');
+  if (envUrl) {
+    const trimmed = envUrl.replace(/\/$/, '');
+    if (!/^https?:\/\//i.test(trimmed)) return `https://${trimmed}`;
+    return trimmed;
+  }
   return 'http://localhost:3000';
 }
 
@@ -77,6 +82,16 @@ export const auth = {
 
 export const enums = {
   get: () => request<ApiEnums>('GET', '/api/enums', undefined, { skipAuth: true }),
+};
+
+export const clubs = {
+  list: () => request<ApiClub[]>('GET', '/api/clubs'),
+  get: (id: string) => request<ApiClub>('GET', `/api/clubs/${id}`),
+  create: (body: { name: string; courtType: 'INDOOR' | 'OUTDOOR' }) =>
+    request<ApiClub>('POST', '/api/clubs', body),
+  update: (id: string, body: { name?: string; courtType?: 'INDOOR' | 'OUTDOOR' }) =>
+    request<ApiClub>('PATCH', `/api/clubs/${id}`, body),
+  delete: (id: string) => request<void>('DELETE', `/api/clubs/${id}`),
 };
 
 export const players = {

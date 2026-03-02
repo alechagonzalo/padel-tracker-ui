@@ -12,10 +12,13 @@ export interface User {
   createdAt: string;
 }
 
+export type ClubType = 'outdoor' | 'indoor';
+
 export interface Club {
   id: string;
   name: string;
   city?: string;
+  type?: ClubType;
   address?: string;
   courtCount?: number;
   imageUrl?: string;

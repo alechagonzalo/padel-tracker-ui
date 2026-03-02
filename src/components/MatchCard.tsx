@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Trash2 } from './icons';
 import { colors } from '@/lib/colors';
 import type { DisplayMatch } from '@/lib/matchDisplay';
@@ -10,10 +11,14 @@ interface Props {
   onDelete?: (id: string) => void;
 }
 
-export function MatchCard({ match, onDelete }: Props) {
-  const navigate = useNavigate();
+const localeByLang: Record<string, string> = { es: 'es-ES', en: 'en-GB' };
 
-  const formattedDate = new Date(match.date).toLocaleDateString('es-ES', {
+export function MatchCard({ match, onDelete }: Props) {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const locale = localeByLang[i18n.language] ?? 'es-ES';
+
+  const formattedDate = new Date(match.date).toLocaleDateString(locale, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -42,14 +47,14 @@ export function MatchCard({ match, onDelete }: Props) {
               color: match.won ? colors.success : colors.destructive,
             }}
           >
-            {match.won ? 'Victoria' : 'Derrota'}
+            {match.won ? t('matchCard.victory') : t('matchCard.defeat')}
           </span>
           {match.category === 'competitive' && (
             <span
               className="px-2 py-0.5 rounded-md text-xs font-semibold"
               style={{ backgroundColor: colors.primary + '18', color: colors.primary }}
             >
-              Torneo
+              {t('matchCard.tournament')}
             </span>
           )}
         </div>
@@ -75,14 +80,14 @@ export function MatchCard({ match, onDelete }: Props) {
 
       <div className="flex items-center mb-2">
         <div className="flex-1">
-          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: colors.mutedForeground }}>Tu equipo</p>
+          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: colors.mutedForeground }}>{t('matchCard.yourTeam')}</p>
           <p className="text-sm font-semibold" style={{ color: colors.foreground }}>
-            Tu + {getPlayerDisplayName(match.partner)}
+            {t('matchCard.youAnd', { name: getPlayerDisplayName(match.partner) })}
           </p>
         </div>
         <span className="text-xs mx-2" style={{ color: colors.mutedForeground }}>vs</span>
         <div className="flex-1 text-right">
-          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: colors.mutedForeground }}>Rivales</p>
+          <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: colors.mutedForeground }}>{t('matchCard.opponents')}</p>
           <p className="text-sm font-semibold" style={{ color: colors.foreground }}>
             {getPlayerDisplayName(match.opponents[0])} + {getPlayerDisplayName(match.opponents[1])}
           </p>

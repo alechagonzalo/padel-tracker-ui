@@ -1,20 +1,25 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Home, Users, Building2, User } from './icons';
 import { PadelRacketIcon } from './PadelRacketIcon';
 import { colors } from '@/lib/colors';
+import { useAddMatchModal } from '@/context/AddMatchModalContext';
 
-const tabs = [
-  { to: '/inicio', Icon: Home, label: 'Inicio' },
-  { to: '/jugadores', Icon: Users, label: 'Jugadores' },
-  { to: '/add', Icon: null, label: 'Añadir' },
-  { to: '/clubes', Icon: Building2, label: 'Clubes' },
-  { to: '/perfil', Icon: User, label: 'Perfil' },
+const tabKeys = [
+  { to: '/inicio', Icon: Home, labelKey: 'nav.inicio' as const },
+  { to: '/jugadores', Icon: Users, labelKey: 'nav.jugadores' as const },
+  { to: '/add', Icon: null, labelKey: 'nav.add' as const },
+  { to: '/clubes', Icon: Building2, labelKey: 'nav.clubes' as const },
+  { to: '/perfil', Icon: User, labelKey: 'nav.perfil' as const },
 ];
 
 export function BottomNav() {
+  const { t } = useTranslation();
+  const { openAddMatchModal } = useAddMatchModal();
+
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-end justify-around pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 flex items-end justify-around pb-safe md:hidden"
       style={{
         backgroundColor: colors.card,
         borderTop: `1px solid ${colors.border}`,
@@ -27,22 +32,21 @@ export function BottomNav() {
         width: '100%',
       }}
     >
-      {tabs.map((tab) =>
+      {tabKeys.map((tab) =>
         tab.Icon === null ? (
-          <NavLink
+          <button
             key={tab.to}
-            to={tab.to}
+            type="button"
+            onClick={openAddMatchModal}
             className="flex flex-col items-center justify-center -mt-4"
           >
-            {({ isActive }) => (
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
-                style={{ backgroundColor: isActive ? '#5a4f22' : colors.primary }}
-              >
-                <PadelRacketIcon size={26} color={colors.primaryForeground} />
-              </div>
-            )}
-          </NavLink>
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+              style={{ backgroundColor: colors.primary }}
+            >
+              <PadelRacketIcon size={26} color={colors.primaryForeground} />
+            </div>
+          </button>
         ) : (
           <NavLink
             key={tab.to}
@@ -59,7 +63,7 @@ export function BottomNav() {
                   className="text-[10px] font-medium"
                   style={{ color: isActive ? colors.primary : colors.mutedForeground }}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </span>
               </>
             )}
